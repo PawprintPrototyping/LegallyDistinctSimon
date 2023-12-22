@@ -10,7 +10,7 @@ The light component of Legally Distinct Simon is run by an ESP-WROOM-32 board pr
 
 EXAMPLE: `ON 1 100 200 300`
 
-* *Cmd* _The command being issued. Currently only supports ON
+* *Cmd* _The command being issued. Currently only supports ON_
 * *PawbeanIndex* _The index of the pawbean to be affected. Beans are numbered left to right starting at 1. Setting the color for pawbean index 0 will affect all lights on the strip._
 * *RedValue* _The amount of red to set, as a number from 0-255_
 * *GreenValue* _The amount of green to set, as a number from 0-255_
