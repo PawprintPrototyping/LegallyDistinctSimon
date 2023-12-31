@@ -5,7 +5,7 @@
 // How many LEDs are attached to the Arduino?
 #define NUM_LEDS 1200
 // LED brightness, 0 (min) to 255 (max)
-#define BRIGHTNESS 64
+#define BRIGHTNESS 255
 
 /* Declare the NeoPixel strip object:
 *     * Argument 1 = Number of LEDs in the LED strip
