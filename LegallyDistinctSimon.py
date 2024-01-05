@@ -10,14 +10,13 @@ import serial
 
 NUM_BEANS = 4
 
-COLORS = ("255 0 0", "0 255 0", "0 0 255", "255 255 0")
+#           RED          GREEN      BLUE     YELLOW
+COLORS = ('255 0 0', '0 255 0', '0 0 255', '255 255 0')
 
-BUTTONS = [
-    gpiozero.Button("GPIO17", bounce_time=0.01),
-    gpiozero.Button("GPIO27", bounce_time=0.01),
-    gpiozero.Button("GPIO22", bounce_time=0.01),
-    gpiozero.Button("GPIO23", bounce_time=0.01),
-]
+BUTTONS = [ gpiozero.Button("GPIO23", bounce_time=0.01),
+            gpiozero.Button("GPIO22", bounce_time=0.01),
+            gpiozero.Button("GPIO17", bounce_time=0.01),
+            gpiozero.Button("GPIO27", bounce_time=0.01) ]
 
 
 class BeanColors(Enum):
