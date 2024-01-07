@@ -22,7 +22,8 @@ BUTTONS = [ gpiozero.Button("GPIO23", bounce_time=0.01),
 # Cheat mode strings with passwords as lists
 CHEAT_MODES = {
     "print_a_line": [1,1,1,1],
-    "dog_mode": [1,2,3,4],
+    "dog_mode": [4,3,2,1],
+    "cat_mode": [1,2,3,4]
 }
 
 
@@ -76,6 +77,28 @@ def get_dog_soundboard():
         pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_woof_p50_a200.wav")),
         pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_woof_p75_a200.wav")),
         pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_woof_p100_a200.wav")),
+    ]
+
+    return sounds
+
+
+def get_cat_soundboard():
+    """Play an audio file as a buffered sound sample, but with dogs
+
+    :param str file_path: audio file (default data/secosmic_low.wav)
+    """
+    # choose a desired audio format
+    pygame.mixer.init(8000)  # raises exception on fail
+
+    # load the sounds
+    sounds = []
+    root_dir = os.path.dirname(__file__)
+    sounds_directory = os.path.join(root_dir, "espeak_sounds/normal")
+    sounds = [
+        pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_meow_p0_a200.wav")),
+        pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_meow_p50_a200.wav")),
+        pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_meow_p75_a200.wav")),
+        pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_meow_p100_a200.wav")),
     ]
 
     return sounds
@@ -343,6 +366,10 @@ def main():
             if cheat_mode_str == "dog_mode":
                 print("DOG MODE UNLOCKED!! DOGS ROOL CATS DROOL!")
                 LIGHTS_AND_SOUND = list(zip(COLORS, get_dog_soundboard()))
+
+            if cheat_mode_str == "cat_mode":
+                print("CAT MODE UNLOCKED!! CATS ROOL DOGS DROOL!")
+                LIGHTS_AND_SOUND = list(zip(COLORS, get_cat_soundboard()))
 
 
 
