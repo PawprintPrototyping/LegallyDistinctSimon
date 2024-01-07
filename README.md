@@ -2,6 +2,7 @@
 A memory game of flashing lights and sounds that definitely isn't owned by Hasbro
 
 > ℹ️ White is ground
+> ℹ️ Buttons are numbered 1-4 from RIGHT to LEFT
 
 ## Serial Command Structure
 The light component of Legally Distinct Simon is run by an ESP-WROOM-32 board programmed in the arduino style. The sketch is set to listen for serial commands from the main game computer (A raspberry pi 2 in our implementation), and light each pawbean appropriately. The command structure is as follows:
