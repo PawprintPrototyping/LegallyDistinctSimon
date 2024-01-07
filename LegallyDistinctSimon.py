@@ -263,11 +263,13 @@ def beep_and_flash_input(ser, index):
     light_command(ser, f"ON {index} 0 0 0\n")
 
 
-def beep_and_flash_bad(ser):
+def beep_and_flash_bad(ser, game_memory):
     # Function for when you lose
     sadge = AttractMode(ser=ser)
     sadge.game_over()
     print("GAME OVER")
+    print(f"YOUR SCORE: f{len(game_memory)}")
+    print("JOIN PAWPRINT PROTOTYPING AT PAWPRINTPROTOTYPING.ORG\n\n")
 
 
 def poll_buttons() -> int:
@@ -382,16 +384,14 @@ def main():
                             input_start_time = time.time()
                         # you lose!
                         else:
-                            beep_and_flash_bad(ser)
+                            beep_and_flash_bad(ser, game_memory)
                             game_memory = []
                             running = False
                             break
 
                 if running and not continue_game:
                     # you lose! (timeout)
-                    beep_and_flash_bad(ser)
-                    print(f"YOUR SCORE: f{len(game_memory)}")
-                    print("JOIN PAWPRINT PROTOTYPING AT PAWPRINTPROTOTYPING.ORG")
+                    beep_and_flash_bad(ser, game_memory)
                     game_memory = []
                     running = False
                     break
