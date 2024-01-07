@@ -43,7 +43,7 @@ def get_soundboard():
 
     # load the sounds
     sounds = []
-    sounds_directory = "/root/LegallyDistinctSimon/sounds"
+    sounds_directory = "/home/pi/LegallyDistinctSimon/sounds"
     for f in os.listdir(sounds_directory):
         sounds.append(pygame.mixer.Sound(os.path.join(sounds_directory, f)))
 
@@ -151,7 +151,7 @@ class AttractMode:
 
     def game_over(self):
         self._set_bean(bean=-1, color=BeanColors.red)
-        sound = pygame.mixer.Sound("/root/LegallyDistinctSimon/buzzer_3.wav")
+        sound = pygame.mixer.Sound("/home/pi/LegallyDistinctSimon/buzzer_3.wav")
         channel = sound.play()
         # poll until finished playing sound
         while channel.get_busy():
