@@ -22,6 +22,7 @@ BUTTONS = [ gpiozero.Button("GPIO23", bounce_time=0.01),
 # Cheat mode strings with passwords as lists
 CHEAT_MODES = {
     "print_a_line": [1,1,1,1],
+    "dog_mode": [1,2,3,4],
 }
 
 
@@ -54,6 +55,28 @@ def get_soundboard():
     sounds_directory = os.path.join(root_dir, "sounds")
     for f in os.listdir(sounds_directory):
         sounds.append(pygame.mixer.Sound(os.path.join(sounds_directory, f)))
+
+    return sounds
+
+
+def get_dog_soundboard():
+    """Play an audio file as a buffered sound sample, but with dogs
+
+    :param str file_path: audio file (default data/secosmic_low.wav)
+    """
+    # choose a desired audio format
+    pygame.mixer.init(8000)  # raises exception on fail
+
+    # load the sounds
+    sounds = []
+    root_dir = os.path.dirname(__file__)
+    sounds_directory = os.path.join(root_dir, "espeak_sounds/normal")
+    sounds = [
+        os.path.join(sounds_directory, "espeak_bark_p0_a200.wav"),
+        os.path.join(sounds_directory, "espeak_bark_p50_a200.wav"),
+        os.path.join(sounds_directory, "espeak_bark_p75_a200.wav"),
+        os.path.join(sounds_directory, "espeak_bark_p100_a200.wav"),
+    ]
 
     return sounds
 
@@ -228,7 +251,7 @@ def beep_and_flash_input(ser, index):
     # very fun quirk, need to call wait_for_press before wait_for_release behaves correctly.
     BUTTONS[index - 1].wait_for_press()
     BUTTONS[index - 1].wait_for_release()
-    print(f"Button {index} released")
+    print(f"Button {index} pushed")
 
     while channel.get_busy():
         butt = poll_buttons()
@@ -266,6 +289,9 @@ def block_until_butt_release(butt):
     BUTTONS[butt - 1].wait_for_press()
     BUTTONS[butt - 1].wait_for_release()
 
+def reset_to_normal_mode():
+    global LIGHTS_AND_SOUND
+    LIGHTS_AND_SOUND = list(zip(COLORS, get_soundboard()))
 
 def main():
     global LIGHTS_AND_SOUND
@@ -279,6 +305,9 @@ def main():
         while True:
             # Clear all the beans
             light_command(ser, "ON 0 0 0 0\n")
+
+            # Reset anything that might have been affected by a special mode
+            reset_to_normal_mode()
 
             attract = AttractMode(ser=ser)
             attract.play()  # Will continue as soon as someone hits a button
@@ -311,6 +340,7 @@ def main():
 
             if cheat_mode_str == "dog_mode":
                 print("DOG MODE UNLOCKED!! DOGS ROOL CATS DROOL!")
+                LIGHTS_AND_SOUND = list(zip(COLORS, get_dog_soundboard()))
 
 
 
