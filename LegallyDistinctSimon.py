@@ -293,6 +293,7 @@ def main():
                     if first_button_press:
                         # Throw out the first button press that exits attract mode
                         first_button_press = False
+                        block_until_butt_release(butt)
                     else:
                         cheat_memory.append(butt) # Add it to the list
                         block_until_butt_release(butt)
@@ -326,9 +327,10 @@ def main():
                     butt = poll_buttons()
                     if butt:
                         # correct answer!
-                        print(
-                            f"current_idx = {current_idx}, butt = {butt}, game_memory = {game_memory}"
-                        )
+                        if DEBUG:
+                            print(
+                                f"current_idx = {current_idx}, butt = {butt}, game_memory = {game_memory}"
+                            )
                         # import pdb; pdb.set_trace()
                         if game_memory[current_idx] == butt:  # haha butt
                             beep_and_flash_input(ser, butt)
