@@ -18,6 +18,11 @@ BUTTONS = [ gpiozero.Button("GPIO23", bounce_time=0.01),
             gpiozero.Button("GPIO17", bounce_time=0.01),
             gpiozero.Button("GPIO27", bounce_time=0.01) ]
 
+# Cheat mode strings with passwords as lists
+CHEAT_MODES = {
+    "print_a_line": [1,1,1,1],
+}
+
 
 class BeanColors(Enum):
     red = COLORS[0]
@@ -172,6 +177,22 @@ class AttractMode:
                     return
 
 
+def get_cheat_mode_str(input_list):
+    # It's not efficient, but goddammit it's 2024
+    # and if we have enough cheat modes for it to
+    # matter, I'm very proud of us. - Kataze
+    if input_list not in CHEAT_MODES.values():
+        cheat_mode_str = None
+    else:
+        cheat_mode_str = list(CHEAT_MODES.keys())[list(CHEAT_MODES.values()).index(input_list)]
+    return cheat_mode_str
+
+def light_all_beans(ser):
+    for i, color in enumerate(COLORS):
+        bean_idx = i + 1
+        light_command(ser, f"ON {bean_idx} {color}")
+
+
 def beep_and_flash(ser, index, interruptable=False):
     assert index > 0 and index <= 4
     light, sound = LIGHTS_AND_SOUND[index - 1]
@@ -235,6 +256,7 @@ def main():
     global LIGHTS_AND_SOUND
     LIGHTS_AND_SOUND = list(zip(COLORS, get_soundboard()))
     TIMEOUT_VALUE = 10
+    CHEAT_TIMEOUT_VALUE = 3
 
     game_memory = []
 
@@ -245,6 +267,25 @@ def main():
 
             attract = AttractMode(ser=ser)
             attract.play()  # Will continue as soon as someone hits a button
+            print("Attract mode is over! Starting in 3 seconds...")
+            
+            # == WELCOME TO THE CHEAT ZONE!!!!11!! ==
+            #light up all beans for cheat code entry
+            light_all_beans(ser)
+            cheat_memory = []
+            cheat_input_start_time = time.time()
+            while time.time() <= cheat_input_start_time + CHEAT_TIMEOUT_VALUE:
+                butt = poll_buttons()
+                if butt:
+                    cheat_memory.append(butt) # Add it to the list
+
+            print(f"CHEAT MEMORY: {cheat_memory}")
+
+            if get_cheat_mode_str(cheat_memory) == "print_a_line":
+                print("CHEAT MODE UNLOCKED: PRINT A LINE! YOU'RE SUCH A HACKER!!")
+            # == NOW LEAVING THE CHEAT ZONE!!!! KEEP IT R34L!! ==
+
+
             pygame.time.wait(3000)
             running = True
             while running:
