@@ -390,6 +390,8 @@ def main():
                 if running and not continue_game:
                     # you lose! (timeout)
                     beep_and_flash_bad(ser)
+                    print(f"YOUR SCORE: f{len(game_memory)}")
+                    print("JOIN PAWPRINT PROTOTYPING AT PAWPRINTPROTOTYPING.ORG")
                     game_memory = []
                     running = False
                     break
