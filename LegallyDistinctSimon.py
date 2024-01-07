@@ -281,7 +281,7 @@ def main():
                 butt = poll_buttons()
                 if butt:
                     cheat_memory.append(butt) # Add it to the list
-                    block_until_butt_release
+                    block_until_butt_release(butt)
                     print(f"BUTTON {butt} PRESSED!")
 
             print(f"CHEAT MEMORY: {cheat_memory}")
