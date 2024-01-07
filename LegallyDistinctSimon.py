@@ -8,6 +8,7 @@ import gpiozero
 import pygame
 import serial
 
+DEBUG=False
 NUM_BEANS = 4
 
 #           RED          GREEN      BLUE     YELLOW
@@ -33,7 +34,8 @@ class BeanColors(Enum):
 
 
 def light_command(ser, command):
-    print(time.time(), "LIGHT:", command)
+    if DEBUG:
+        print(time.time(), "LIGHT:", command)
     ser.write(command.encode("latin1"))
     ser.flush()
 
@@ -291,7 +293,6 @@ def main():
                     if first_button_press:
                         # Throw out the first button press that exits attract mode
                         first_button_press = False
-                        continue
                     else:
                         cheat_memory.append(butt) # Add it to the list
                         block_until_butt_release(butt)
