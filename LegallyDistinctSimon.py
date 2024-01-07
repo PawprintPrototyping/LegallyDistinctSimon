@@ -187,10 +187,15 @@ def get_cheat_mode_str(input_list):
         cheat_mode_str = list(CHEAT_MODES.keys())[list(CHEAT_MODES.values()).index(input_list)]
     return cheat_mode_str
 
+
 def light_all_beans(ser):
     for i, color in enumerate(COLORS):
         bean_idx = i + 1
-        light_command(ser, f"ON {bean_idx} {color}")
+        light_command(ser, f"ON {bean_idx} {color}\n")
+
+
+def blank_all_beans(ser):
+    light_command(ser, "ON 0 0 0 0\n")
 
 
 def beep_and_flash(ser, index, interruptable=False):
@@ -251,9 +256,11 @@ def poll_buttons() -> int:
 def next_value():
     return random.choice(list(range(1, NUM_BEANS + 1)))
 
+
 def block_until_butt_release(butt):
     BUTTONS[butt - 1].wait_for_press()
     BUTTONS[butt - 1].wait_for_release()
+
 
 def main():
     global LIGHTS_AND_SOUND
@@ -277,14 +284,21 @@ def main():
             light_all_beans(ser)
             cheat_memory = []
             cheat_input_start_time = time.time()
+            first_button_press = True
             while time.time() <= cheat_input_start_time + CHEAT_TIMEOUT_VALUE:
                 butt = poll_buttons()
                 if butt:
-                    cheat_memory.append(butt) # Add it to the list
-                    block_until_butt_release(butt)
-                    print(f"BUTTON {butt} PRESSED!")
+                    if first_button_press:
+                        # Throw out the first button press that exits attract mode
+                        first_button_press = False
+                        continue
+                    else:
+                        cheat_memory.append(butt) # Add it to the list
+                        block_until_butt_release(butt)
+                        print(f"BUTTON {butt} PRESSED!")
 
             print(f"CHEAT MEMORY: {cheat_memory}")
+            blank_all_beans(ser)
 
             if get_cheat_mode_str(cheat_memory) == "print_a_line":
                 print("CHEAT MODE UNLOCKED: PRINT A LINE! YOU'RE SUCH A HACKER!!")
