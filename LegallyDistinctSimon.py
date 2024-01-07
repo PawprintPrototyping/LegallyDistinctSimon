@@ -349,7 +349,7 @@ def main():
                             running = False
                             break
 
-                if not continue_game:
+                if running and not continue_game:
                     # you lose! (timeout)
                     beep_and_flash_bad(ser)
                     game_memory = []
