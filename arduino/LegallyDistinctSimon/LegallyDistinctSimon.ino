@@ -27,11 +27,11 @@ struct pawbean{
 };
 
 // pawbean0 is a special pawbean that addresses the whole strip
-const pawbean pawbean0 = {0, 1199};
-const pawbean pawbean1 = {0, 299};
-const pawbean pawbean2 = {300, 599};
-const pawbean pawbean3 = {600, 899};
-const pawbean pawbean4 = {900, 1199};
+const pawbean pawbean0 = {0, 35+42+42+34};
+const pawbean pawbean1 = {0, 34};
+const pawbean pawbean2 = {35, 35+41};
+const pawbean pawbean3 = {35+42, 35+42+41};
+const pawbean pawbean4 = {35+42+42, 35+42+42+34};
 
 // Zero-index be damned!!
 pawbean pawbean_arr[] = {pawbean0, pawbean1, pawbean2, pawbean3, pawbean4};
