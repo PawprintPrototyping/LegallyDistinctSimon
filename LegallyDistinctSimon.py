@@ -268,7 +268,7 @@ def beep_and_flash_bad(ser, game_memory):
     sadge = AttractMode(ser=ser)
     sadge.game_over()
     print("GAME OVER")
-    print(f"YOUR SCORE: f{len(game_memory)}")
+    print(f"YOUR SCORE: {len(game_memory) - 1}")
     print("JOIN PAWPRINT PROTOTYPING AT PAWPRINTPROTOTYPING.ORG\n\n")
 
 
