@@ -228,7 +228,7 @@ def beep_and_flash_input(ser, index):
     # very fun quirk, need to call wait_for_press before wait_for_release behaves correctly.
     BUTTONS[index - 1].wait_for_press()
     BUTTONS[index - 1].wait_for_release()
-    print(time.time(), f"Button {index} released")
+    print(f"Button {index} released")
 
     while channel.get_busy():
         butt = poll_buttons()
@@ -316,8 +316,6 @@ def main():
 
             # == NOW LEAVING THE CHEAT ZONE!!!! KEEP IT R34L!! ==
 
-
-            pygame.time.wait(3000)
             running = True
             while running:
                 game_memory.append(next_value())
