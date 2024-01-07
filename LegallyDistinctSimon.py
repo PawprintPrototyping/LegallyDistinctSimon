@@ -50,7 +50,8 @@ def get_soundboard():
 
     # load the sounds
     sounds = []
-    sounds_directory = "/home/pi/LegallyDistinctSimon/sounds"
+    root_dir = os.path.dirname(__file__)
+    sounds_directory = os.path.join(root_dir, "sounds")
     for f in os.listdir(sounds_directory):
         sounds.append(pygame.mixer.Sound(os.path.join(sounds_directory, f)))
 
@@ -158,7 +159,9 @@ class AttractMode:
 
     def game_over(self):
         self._set_bean(bean=-1, color=BeanColors.red)
-        sound = pygame.mixer.Sound("/home/pi/LegallyDistinctSimon/buzzer_3.wav")
+        root_dir = os.path.dirname(__file__)
+        game_over_sound_path = os.path.join(root_dir, "buzzer_3.wav")
+        sound = pygame.mixer.Sound(game_over_sound_path)
         channel = sound.play()
         # poll until finished playing sound
         while channel.get_busy():
@@ -302,8 +305,15 @@ def main():
             print(f"CHEAT MEMORY: {cheat_memory}")
             blank_all_beans(ser)
 
-            if get_cheat_mode_str(cheat_memory) == "print_a_line":
+            cheat_mode_str = get_cheat_mode_str(cheat_memory)
+            if cheat_mode_str == "print_a_line":
                 print("CHEAT MODE UNLOCKED: PRINT A LINE! YOU'RE SUCH A HACKER!!")
+
+            if cheat_mode_str == "dog_mode":
+                print("DOG MODE UNLOCKED!! DOGS ROOL CATS DROOL!")
+
+
+
             # == NOW LEAVING THE CHEAT ZONE!!!! KEEP IT R34L!! ==
 
 
