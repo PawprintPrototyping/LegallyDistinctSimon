@@ -251,6 +251,9 @@ def poll_buttons() -> int:
 def next_value():
     return random.choice(list(range(1, NUM_BEANS + 1)))
 
+def block_until_butt_release(butt):
+    BUTTONS[butt - 1].wait_for_press()
+    BUTTONS[butt - 1].wait_for_release()
 
 def main():
     global LIGHTS_AND_SOUND
@@ -278,6 +281,8 @@ def main():
                 butt = poll_buttons()
                 if butt:
                     cheat_memory.append(butt) # Add it to the list
+                    block_until_butt_release
+                    print(f"BUTTON {butt} PRESSED!")
 
             print(f"CHEAT MEMORY: {cheat_memory}")
 
