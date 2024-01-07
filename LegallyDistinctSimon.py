@@ -72,10 +72,10 @@ def get_dog_soundboard():
     root_dir = os.path.dirname(__file__)
     sounds_directory = os.path.join(root_dir, "espeak_sounds/normal")
     sounds = [
-        os.path.join(sounds_directory, "espeak_bark_p0_a200.wav"),
-        os.path.join(sounds_directory, "espeak_bark_p50_a200.wav"),
-        os.path.join(sounds_directory, "espeak_bark_p75_a200.wav"),
-        os.path.join(sounds_directory, "espeak_bark_p100_a200.wav"),
+        pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_bark_p0_a200.wav")),
+        pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_bark_p50_a200.wav")),
+        pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_bark_p75_a200.wav")),
+        pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_bark_p100_a200.wav")),
     ]
 
     return sounds
