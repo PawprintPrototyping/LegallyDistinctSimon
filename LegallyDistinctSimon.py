@@ -266,6 +266,7 @@ def beep_and_flash(ser, index, interruptable=False):
         channel.stop()
         if SPEEDRUN_TIMER > 50:
             SPEEDRUN_TIMER = SPEEDRUN_TIMER - 10
+            print(f"Decreasing flash time to {SPEEDRUN_TIMER}ms!")
     else:
         # poll until finished playing sound
         while channel.get_busy():
