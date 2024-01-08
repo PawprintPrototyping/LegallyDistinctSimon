@@ -286,11 +286,19 @@ def beep_and_flash_input(ser, index):
     BUTTONS[index - 1].wait_for_release()
     print(f"Button {index} pushed")
 
-    while channel.get_busy():
-        butt = poll_buttons()
-        if butt != 0:
-            channel.stop()
-            break
+    if SPEEDRUN_TIMER:
+        for _ in range(round((SPEEDRUN_TIMER * 0.9))): # Borrowing kay's technique for non-blocking wait
+            pygame.time.wait(1)
+            butt = poll_buttons()
+            if butt != 0:
+                break
+        channel.stop()
+    else:
+        while channel.get_busy():
+            butt = poll_buttons()
+            if butt != 0:
+                channel.stop()
+                break
 
     # turn off light
     light_command(ser, f"ON {index} 0 0 0\n")
@@ -333,11 +341,13 @@ def reset_to_normal_mode():
     LIGHTS_AND_SOUND = list(zip(COLORS, get_soundboard()))
     # kill any video players
     if BLUE_PLAYER_PROC:
+        # Begone thot
         BLUE_PLAYER_PROC.kill()
         BLUE_PLAYER_PROC = None
     SPEEDRUN_TIMER = None
     if SONIC_PROC:
-        SONIC_PROC.kill()
+        # Be gentler and SIGTERM, since there's a family tree here
+        SONIC_PROC.terminate()
         SONIC_PROC = None
 
 def main():
@@ -410,7 +420,7 @@ def main():
 
             if cheat_mode_str == "speedrun_mode":
                 print("CHEAT MODE UNLOCKED: SPEED RUN MODE!! GOTTA GO FAST!")
-                SPEEDRUN_TIMER = 400
+                SPEEDRUN_TIMER = 500
                 root_dir = os.path.dirname(__file__)
                 scripts_directory = os.path.join(root_dir, "scripts")
                 full_sanic_path = os.path.join(scripts_directory, "sanic.sh")
