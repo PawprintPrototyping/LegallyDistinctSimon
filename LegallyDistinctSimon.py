@@ -7,6 +7,7 @@ from enum import Enum
 import gpiozero
 import pygame
 import serial
+import subprocess
 
 DEBUG=False
 NUM_BEANS = 4
@@ -23,7 +24,8 @@ BUTTONS = [ gpiozero.Button("GPIO23", bounce_time=0.01),
 CHEAT_MODES = {
     "print_a_line": [1,1,1,1],
     "dog_mode": [4,3,2,1],
-    "cat_mode": [1,2,3,4]
+    "cat_mode": [1,2,3,4],
+    "blue_mode": [3,3,3,3,3,3],
 }
 
 
@@ -315,12 +317,20 @@ def block_until_butt_release(butt):
     BUTTONS[butt - 1].wait_for_release()
 
 def reset_to_normal_mode():
+    # If you change something for a special cheat mode, make sure to reset it here!
     global LIGHTS_AND_SOUND
+    global BLUE_PLAYER_PROC
     LIGHTS_AND_SOUND = list(zip(COLORS, get_soundboard()))
+    # kill any video players
+    if BLUE_PLAYER_PROC:
+        BLUE_PLAYER_PROC.kill()
+        BLUE_PLAYER_PROC = None
 
 def main():
     global LIGHTS_AND_SOUND
+    global BLUE_PLAYER_PROC
     LIGHTS_AND_SOUND = list(zip(COLORS, get_soundboard()))
+    BLUE_PLAYER_PROC = None
     TIMEOUT_VALUE = 10
     CHEAT_TIMEOUT_VALUE = 3
 
@@ -364,13 +374,21 @@ def main():
                 print("CHEAT MODE UNLOCKED: PRINT A LINE! YOU'RE SUCH A HACKER!!")
 
             if cheat_mode_str == "dog_mode":
-                print("DOG MODE UNLOCKED!! DOGS ROOL CATS DROOL!")
+                print("CHEAT MODE UNLOCKED: DOG MODE!! DOGS ROOL CATS DROOL!")
                 LIGHTS_AND_SOUND = list(zip(COLORS, get_dog_soundboard()))
 
             if cheat_mode_str == "cat_mode":
-                print("CAT MODE UNLOCKED!! CATS ROOL DOGS DROOL!")
+                print("CHEAT MODE UNLOCKED: CAT MODE!! CATS ROOL DOGS DROOL!")
                 LIGHTS_AND_SOUND = list(zip(COLORS, get_cat_soundboard()))
 
+            if cheat_mode_str == "blue_mode":
+                print("CHEAT MODE UNLOCKED: BLUE MODE!! DA BA DEE DA BA DI!")
+                root_dir = os.path.dirname(__file__)
+                videos_directory = os.path.join(root_dir, "videos")
+                full_blue_path = os.path.join(videos_directory, "blue.webm")
+                BLUE_COLORS = ('0 0 255', '0 0 255', '0 0 255', '0 0 255')
+                LIGHTS_AND_SOUND = list(zip(BLUE_COLORS, get_soundboard()))
+                BLUE_PLAYER_PROC = subprocess.Popen(["mplayer", "-geometry", "300x300+300+300", full_blue_path])
 
 
             # == NOW LEAVING THE CHEAT ZONE!!!! KEEP IT R34L!! ==
