@@ -7,6 +7,7 @@ from enum import Enum
 import gpiozero
 import pygame
 import serial
+import subprocess
 
 DEBUG=False
 NUM_BEANS = 4
@@ -318,13 +319,18 @@ def block_until_butt_release(butt):
 def reset_to_normal_mode():
     # If you change something for a special cheat mode, make sure to reset it here!
     global LIGHTS_AND_SOUND
+    global BLUE_PLAYER_PROC
     LIGHTS_AND_SOUND = list(zip(COLORS, get_soundboard()))
     # kill any video players
-    os.system("pkill mplayer")
+    if BLUE_PLAYER_PROC:
+        BLUE_PLAYER_PROC.kill()
+        BLUE_PLAYER_PROC = None
 
 def main():
     global LIGHTS_AND_SOUND
+    global BLUE_PLAYER_PROC
     LIGHTS_AND_SOUND = list(zip(COLORS, get_soundboard()))
+    BLUE_PLAYER_PROC = None
     TIMEOUT_VALUE = 10
     CHEAT_TIMEOUT_VALUE = 3
 
@@ -382,8 +388,7 @@ def main():
                 full_blue_path = os.path.join(videos_directory, "blue.webm")
                 BLUE_COLORS = ('0 0 255', '0 0 255', '0 0 255', '0 0 255')
                 LIGHTS_AND_SOUND = list(zip(BLUE_COLORS, get_soundboard()))
-                os.system(f"mplayer -geometry 300x300+300+300 {full_blue_path}")
-
+                BLUE_PLAYER_PROC = subprocess.Popen(["mplayer", "-geometry", "300x300+300+300", full_blue_path])
 
 
             # == NOW LEAVING THE CHEAT ZONE!!!! KEEP IT R34L!! ==
