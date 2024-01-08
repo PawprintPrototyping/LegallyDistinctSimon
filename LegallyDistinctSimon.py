@@ -336,7 +336,7 @@ def reset_to_normal_mode():
         BLUE_PLAYER_PROC.kill()
         BLUE_PLAYER_PROC = None
     SPEEDRUN_TIMER = None
-    if SONIC_PROC
+    if SONIC_PROC:
         SONIC_PROC.kill()
         SONIC_PROC = None
 
