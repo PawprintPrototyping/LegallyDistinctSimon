@@ -403,7 +403,7 @@ def main():
             # If you got a cheat mode at all, let's congratulate you!
             if cheat_mode_str:
                 root_dir = os.path.dirname(__file__)
-                zelda_secret_sound_path = os.path.join(root_dir, "zelda_secret.mp3")
+                zelda_secret_sound_path = os.path.join(root_dir, "zelda_secret.wav")
                 sound = pygame.mixer.Sound(zelda_secret_sound_path)
                 channel = sound.play()
 
