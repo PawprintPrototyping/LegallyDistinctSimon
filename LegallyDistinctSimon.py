@@ -264,7 +264,8 @@ def beep_and_flash(ser, index, interruptable=False):
     if SPEEDRUN_TIMER:
         pygame.time.wait(SPEEDRUN_TIMER)
         channel.stop()
-        SPEEDRUN_TIMER = SPEEDRUN_TIMER - 10
+        if SPEEDRUN_TIMER >= 10:
+            SPEEDRUN_TIMER = SPEEDRUN_TIMER - 10
     else:
         # poll until finished playing sound
         while channel.get_busy():
