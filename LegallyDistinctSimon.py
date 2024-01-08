@@ -38,12 +38,11 @@ class BeanColors(Enum):
     off = "0 0 0"
 
 
-def light_command(ser, command, flush=True):
+def light_command(ser, command):
     if DEBUG:
         print(time.time(), "LIGHT:", command)
     ser.write(command.encode("latin1"))
-    if flush:
-        ser.flush()
+    ser.flush()
 
 
 def get_soundboard():
@@ -246,8 +245,7 @@ def get_cheat_mode_str(input_list):
 def light_all_beans(ser):
     for i, color in enumerate(COLORS):
         bean_idx = i + 1
-        light_command(ser, f"ON {bean_idx} {color}\n", flush=False)
-        ser.flush()
+        light_command(ser, f"ON {bean_idx} {color}\n")
 
 
 def blank_all_beans(ser):
@@ -409,9 +407,9 @@ def main():
                 sound = pygame.mixer.Sound(zelda_secret_sound_path)
                 channel = sound.play()
                 
-                # Celebratory flash!
+                # Celebratory green flash!
                 for _ in range(3):
-                    light_all_beans(ser)
+                    light_command(ser, f"ON 0 0 255 0\n")
                     pygame.time.wait(200)
                     blank_all_beans(ser)
                     pygame.time.wait(200)
