@@ -26,6 +26,7 @@ CHEAT_MODES = {
     "dog_mode": [4,3,2,1],
     "cat_mode": [1,2,3,4],
     "blue_mode": [3,3,3,3,3,3],
+    "speedrun_mode": [2,3,1,4],
 }
 
 
@@ -252,15 +253,22 @@ def blank_all_beans(ser):
 
 
 def beep_and_flash(ser, index, interruptable=False):
+    global SPEEDRUN_TIMER
+
     assert index > 0 and index <= 4
     light, sound = LIGHTS_AND_SOUND[index - 1]
 
     light_command(ser, f"ON {index} {light}\n")
     channel = sound.play()
 
-    # poll until finished playing sound
-    while channel.get_busy():
-        pygame.time.wait(10)
+    if SPEEDRUN_TIMER:
+        pygame.time.wait(SPEEDRUN_TIMER)
+        channel.stop()
+        SPEEDRUN_TIMER = SPEEDRUN_TIMER - 10
+    else:
+        # poll until finished playing sound
+        while channel.get_busy():
+            pygame.time.wait(10)
 
     # turn off light
     light_command(ser, f"ON {index} 0 0 0\n")
@@ -320,17 +328,27 @@ def reset_to_normal_mode():
     # If you change something for a special cheat mode, make sure to reset it here!
     global LIGHTS_AND_SOUND
     global BLUE_PLAYER_PROC
+    global SPEEDRUN_TIMER
+    global SONIC_PROC
     LIGHTS_AND_SOUND = list(zip(COLORS, get_soundboard()))
     # kill any video players
     if BLUE_PLAYER_PROC:
         BLUE_PLAYER_PROC.kill()
         BLUE_PLAYER_PROC = None
+    SPEEDRUN_TIMER = None
+    if SONIC_PROC
+        SONIC_PROC.kill()
+        SONIC_PROC = None
 
 def main():
     global LIGHTS_AND_SOUND
     global BLUE_PLAYER_PROC
+    global SPEEDRUN_TIMER
+    global SONIC_PROC
     LIGHTS_AND_SOUND = list(zip(COLORS, get_soundboard()))
     BLUE_PLAYER_PROC = None
+    SPEEDRUN_TIMER = None
+    SONIC_PROC = None
     TIMEOUT_VALUE = 10
     CHEAT_TIMEOUT_VALUE = 3
 
@@ -389,6 +407,16 @@ def main():
                 BLUE_COLORS = ('0 0 255', '0 0 255', '0 0 255', '0 0 255')
                 LIGHTS_AND_SOUND = list(zip(BLUE_COLORS, get_soundboard()))
                 BLUE_PLAYER_PROC = subprocess.Popen(["mplayer", "-geometry", "300x300+300+300", full_blue_path])
+
+            if cheat_mode_str == "speedrun_mode":
+                print("CHEAT MODE UNLOCKED: SPEED RUN MODE!! GOTTA GO FAST!")
+                SPEEDRUN_TIMER = 400
+                root_dir = os.path.dirname(__file__)
+                scripts_directory = os.path.join(root_dir, "scripts")
+                full_sanic_path = os.path.join(scripts_directory, "sanic.sh")
+                SONIC_PROC = subprocess.Popen(full_sanic_path)
+
+
 
 
             # == NOW LEAVING THE CHEAT ZONE!!!! KEEP IT R34L!! ==
