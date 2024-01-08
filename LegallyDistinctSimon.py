@@ -25,7 +25,7 @@ CHEAT_MODES = {
     "print_a_line": [1,1,1,1],
     "dog_mode": [4,3,2,1],
     "cat_mode": [1,2,3,4],
-    "blue_mode": [1,1,1,1,1,1],
+    "blue_mode": [3,3,3,3,3,3],
 }
 
 
