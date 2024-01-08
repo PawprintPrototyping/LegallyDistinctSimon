@@ -7,6 +7,7 @@ from enum import Enum
 import gpiozero
 import pygame
 import serial
+import subprocess
 
 DEBUG=False
 NUM_BEANS = 4
@@ -23,7 +24,9 @@ BUTTONS = [ gpiozero.Button("GPIO23", bounce_time=0.01),
 CHEAT_MODES = {
     "print_a_line": [1,1,1,1],
     "dog_mode": [4,3,2,1],
-    "cat_mode": [1,2,3,4]
+    "cat_mode": [1,2,3,4],
+    "blue_mode": [3,3,3,3,3,3],
+    "speedrun_mode": [2,3,1,4],
 }
 
 
@@ -250,15 +253,24 @@ def blank_all_beans(ser):
 
 
 def beep_and_flash(ser, index, interruptable=False):
+    global SPEEDRUN_TIMER
+
     assert index > 0 and index <= 4
     light, sound = LIGHTS_AND_SOUND[index - 1]
 
     light_command(ser, f"ON {index} {light}\n")
     channel = sound.play()
 
-    # poll until finished playing sound
-    while channel.get_busy():
-        pygame.time.wait(10)
+    if SPEEDRUN_TIMER:
+        pygame.time.wait(SPEEDRUN_TIMER)
+        channel.stop()
+        if SPEEDRUN_TIMER > 50:
+            SPEEDRUN_TIMER = SPEEDRUN_TIMER - 10
+            print(f"Decreasing flash time to {SPEEDRUN_TIMER}ms!")
+    else:
+        # poll until finished playing sound
+        while channel.get_busy():
+            pygame.time.wait(10)
 
     # turn off light
     light_command(ser, f"ON {index} 0 0 0\n")
@@ -276,21 +288,32 @@ def beep_and_flash_input(ser, index):
     BUTTONS[index - 1].wait_for_release()
     print(f"Button {index} pushed")
 
-    while channel.get_busy():
-        butt = poll_buttons()
-        if butt != 0:
-            channel.stop()
-            break
+    if SPEEDRUN_TIMER:
+        for _ in range(round((SPEEDRUN_TIMER * 0.9))): # Borrowing kay's technique for non-blocking wait
+            pygame.time.wait(1)
+            butt = poll_buttons()
+            if butt != 0:
+                break
+        channel.stop()
+    else:
+        while channel.get_busy():
+            butt = poll_buttons()
+            if butt != 0:
+                channel.stop()
+                break
 
     # turn off light
     light_command(ser, f"ON {index} 0 0 0\n")
 
 
-def beep_and_flash_bad(ser, game_memory):
+def beep_and_flash_bad(ser, game_memory, cheat_mode_str):
     # Function for when you lose
     sadge = AttractMode(ser=ser)
     sadge.game_over()
-    print("GAME OVER")
+    if cheat_mode_str:
+        print(f"{cheat_mode_str} GAME OVER!")
+    else:
+        print("GAME OVER!")
     print(f"YOUR SCORE: {len(game_memory) - 1}")
     print("JOIN PAWPRINT PROTOTYPING AT PAWPRINTPROTOTYPING.ORG\n\n")
 
@@ -315,12 +338,32 @@ def block_until_butt_release(butt):
     BUTTONS[butt - 1].wait_for_release()
 
 def reset_to_normal_mode():
+    # If you change something for a special cheat mode, make sure to reset it here!
     global LIGHTS_AND_SOUND
+    global BLUE_PLAYER_PROC
+    global SPEEDRUN_TIMER
+    global SONIC_PROC
     LIGHTS_AND_SOUND = list(zip(COLORS, get_soundboard()))
+    # kill any video players
+    if BLUE_PLAYER_PROC:
+        # Begone thot
+        BLUE_PLAYER_PROC.kill()
+        BLUE_PLAYER_PROC = None
+    SPEEDRUN_TIMER = None
+    if SONIC_PROC:
+        # Be gentler and SIGTERM, since there's a family tree here
+        SONIC_PROC.terminate()
+        SONIC_PROC = None
 
 def main():
     global LIGHTS_AND_SOUND
+    global BLUE_PLAYER_PROC
+    global SPEEDRUN_TIMER
+    global SONIC_PROC
     LIGHTS_AND_SOUND = list(zip(COLORS, get_soundboard()))
+    BLUE_PLAYER_PROC = None
+    SPEEDRUN_TIMER = None
+    SONIC_PROC = None
     TIMEOUT_VALUE = 10
     CHEAT_TIMEOUT_VALUE = 3
 
@@ -360,18 +403,53 @@ def main():
             blank_all_beans(ser)
 
             cheat_mode_str = get_cheat_mode_str(cheat_memory)
+            
+            # If you got a cheat mode at all, let's congratulate you!
+            if cheat_mode_str:
+                root_dir = os.path.dirname(__file__)
+                zelda_secret_sound_path = os.path.join(root_dir, "zelda_secret.wav")
+                sound = pygame.mixer.Sound(zelda_secret_sound_path)
+                channel = sound.play()
+                
+                # Celebratory green flash!
+                for _ in range(3):
+                    light_command(ser, f"ON 0 0 255 0\n")
+                    pygame.time.wait(200)
+                    blank_all_beans(ser)
+                    pygame.time.wait(200)
+
+                # Let the sound finish, because you're worth it
+                while channel.get_busy():
+                    pygame.time.wait(10)
+
+
             if cheat_mode_str == "print_a_line":
                 print("CHEAT MODE UNLOCKED: PRINT A LINE! YOU'RE SUCH A HACKER!!")
 
             if cheat_mode_str == "dog_mode":
-                print("DOG MODE UNLOCKED!! DOGS ROOL CATS DROOL!")
+                print("CHEAT MODE UNLOCKED: DOG MODE!! DOGS ROOL CATS DROOL!")
                 LIGHTS_AND_SOUND = list(zip(COLORS, get_dog_soundboard()))
 
             if cheat_mode_str == "cat_mode":
-                print("CAT MODE UNLOCKED!! CATS ROOL DOGS DROOL!")
+                print("CHEAT MODE UNLOCKED: CAT MODE!! CATS ROOL DOGS DROOL!")
                 LIGHTS_AND_SOUND = list(zip(COLORS, get_cat_soundboard()))
 
+            if cheat_mode_str == "blue_mode":
+                print("CHEAT MODE UNLOCKED: BLUE MODE!! DA BA DEE DA BA DI!")
+                root_dir = os.path.dirname(__file__)
+                videos_directory = os.path.join(root_dir, "videos")
+                full_blue_path = os.path.join(videos_directory, "blue.webm")
+                BLUE_COLORS = ('0 0 255', '0 0 255', '0 0 255', '0 0 255')
+                LIGHTS_AND_SOUND = list(zip(BLUE_COLORS, get_soundboard()))
+                BLUE_PLAYER_PROC = subprocess.Popen(["mplayer", "-geometry", "300x300+300+300", full_blue_path])
 
+            if cheat_mode_str == "speedrun_mode":
+                print("CHEAT MODE UNLOCKED: SPEED RUN MODE!! GOTTA GO FAST!")
+                SPEEDRUN_TIMER = 500
+                root_dir = os.path.dirname(__file__)
+                scripts_directory = os.path.join(root_dir, "scripts")
+                full_sanic_path = os.path.join(scripts_directory, "sanic.sh")
+                SONIC_PROC = subprocess.Popen(full_sanic_path)
 
             # == NOW LEAVING THE CHEAT ZONE!!!! KEEP IT R34L!! ==
 
@@ -411,14 +489,14 @@ def main():
                             input_start_time = time.time()
                         # you lose!
                         else:
-                            beep_and_flash_bad(ser, game_memory)
+                            beep_and_flash_bad(ser, game_memory, cheat_mode_str)
                             game_memory = []
                             running = False
                             break
 
                 if running and not continue_game:
                     # you lose! (timeout)
-                    beep_and_flash_bad(ser, game_memory)
+                    beep_and_flash_bad(ser, game_memory, cheat_mode_str)
                     game_memory = []
                     running = False
                     break
