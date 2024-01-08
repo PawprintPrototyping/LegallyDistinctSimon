@@ -406,6 +406,18 @@ def main():
                 zelda_secret_sound_path = os.path.join(root_dir, "zelda_secret.wav")
                 sound = pygame.mixer.Sound(zelda_secret_sound_path)
                 channel = sound.play()
+                
+                # Celebratory flash!
+                for _ in range(3):
+                    light_all_beans(ser)
+                    pygame.time.wait(200)
+                    blank_all_beans(ser)
+                    pygame.time.wait(200)
+
+                # Let the sound finish, because you're worth it
+                while channel.get_busy():
+                    pygame.time.wait(10)
+
 
             if cheat_mode_str == "print_a_line":
                 print("CHEAT MODE UNLOCKED: PRINT A LINE! YOU'RE SUCH A HACKER!!")
