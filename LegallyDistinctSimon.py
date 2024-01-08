@@ -399,6 +399,14 @@ def main():
             blank_all_beans(ser)
 
             cheat_mode_str = get_cheat_mode_str(cheat_memory)
+            
+            # If you got a cheat mode at all, let's congratulate you!
+            if cheat_mode_str:
+                root_dir = os.path.dirname(__file__)
+                zelda_secret_sound_path = os.path.join(root_dir, "zelda_secret.mp3")
+                sound = pygame.mixer.Sound(zelda_secret_sound_path)
+                channel = sound.play()
+
             if cheat_mode_str == "print_a_line":
                 print("CHEAT MODE UNLOCKED: PRINT A LINE! YOU'RE SUCH A HACKER!!")
 
