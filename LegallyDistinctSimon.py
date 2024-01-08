@@ -305,11 +305,14 @@ def beep_and_flash_input(ser, index):
     light_command(ser, f"ON {index} 0 0 0\n")
 
 
-def beep_and_flash_bad(ser, game_memory):
+def beep_and_flash_bad(ser, game_memory, cheat_mode_str):
     # Function for when you lose
     sadge = AttractMode(ser=ser)
     sadge.game_over()
-    print("GAME OVER")
+    if cheat_mode_str:
+        print(f"{cheat_mode_str} GAME OVER!")
+    else:
+        print("GAME OVER!")
     print(f"YOUR SCORE: {len(game_memory) - 1}")
     print("JOIN PAWPRINT PROTOTYPING AT PAWPRINTPROTOTYPING.ORG\n\n")
 
@@ -447,9 +450,6 @@ def main():
                 full_sanic_path = os.path.join(scripts_directory, "sanic.sh")
                 SONIC_PROC = subprocess.Popen(full_sanic_path)
 
-
-
-
             # == NOW LEAVING THE CHEAT ZONE!!!! KEEP IT R34L!! ==
 
             running = True
@@ -488,14 +488,14 @@ def main():
                             input_start_time = time.time()
                         # you lose!
                         else:
-                            beep_and_flash_bad(ser, game_memory)
+                            beep_and_flash_bad(ser, game_memory, cheat_mode_str)
                             game_memory = []
                             running = False
                             break
 
                 if running and not continue_game:
                     # you lose! (timeout)
-                    beep_and_flash_bad(ser, game_memory)
+                    beep_and_flash_bad(ser, game_memory, cheat_mode_str)
                     game_memory = []
                     running = False
                     break
