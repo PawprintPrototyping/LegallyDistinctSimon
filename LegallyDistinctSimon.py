@@ -9,6 +9,7 @@ import pygame
 import serial
 import subprocess
 import json
+import datetime
 
 DEBUG=False
 NUM_BEANS = 4
