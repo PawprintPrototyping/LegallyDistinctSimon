@@ -330,7 +330,7 @@ def create_or_increment_odometer(cheat_mode_str, score):
             odometer = {"odometer_started": datetime.datetime.now().isoformat()}
             json.dump(odometer, odometer_file)
 
-    with open(odometer_path, "r+") as odometer_file:
+    with open(odometer_path, "w+") as odometer_file:
         odometer = json.load(odometer_file)
         odometer["total_games"] = odometer.get("total_games", 0) + 1
         odometer[cheat_mode_str] = odometer.get(cheat_mode_str, 0) + 1
