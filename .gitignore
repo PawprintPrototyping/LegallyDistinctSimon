@@ -162,3 +162,6 @@ cython_debug/
 
 .idea
 .idea/**
+
+# LegallyDistinctSimon Odometer file
+odometer.json

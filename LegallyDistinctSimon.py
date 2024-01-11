@@ -8,6 +8,7 @@ import gpiozero
 import pygame
 import serial
 import subprocess
+import json
 
 DEBUG=False
 NUM_BEANS = 4
@@ -309,12 +310,31 @@ def beep_and_flash_bad(ser, game_memory, cheat_mode_str):
     # Function for when you lose
     sadge = AttractMode(ser=ser)
     sadge.game_over()
+    create_or_increment_odometer(cheat_mode_str)
     if cheat_mode_str:
         print(f"{cheat_mode_str} GAME OVER!")
     else:
         print("GAME OVER!")
     print(f"YOUR SCORE: {len(game_memory) - 1}")
     print("JOIN PAWPRINT PROTOTYPING AT PAWPRINTPROTOTYPING.ORG\n\n")
+
+def create_or_increment_odometer(cheat_mode_str):
+    root_dir = os.path.dirname(__file__)
+    odometer_path = os.path.join(root_dir, "odometer.json")
+    
+    # make it if it's not there, put a pretty timestamp
+    if not os.path.isfile(odometer_path):
+        with open("odometer_path", "w") as odometer_file:
+            odometer = {"odometer_started": datetime.datetime.now().isoformat()}
+            json.dump(odometer, odometer_file)
+
+    with open("odometer_path", "r+") as odometer_file:
+        odometer = json.load(odometer_file)
+        odometer[total_games] = odometer.get(total_games, 0) + 1
+        odometer[cheat_mode_str] = odometer.get(cheat_mode_str, 0) + 1
+        # Wipe out the old file
+        odometer_file.truncate(0)
+        json.dump(odometer, odometer_file)
 
 
 def poll_buttons() -> int:
