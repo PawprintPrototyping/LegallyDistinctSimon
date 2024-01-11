@@ -310,15 +310,16 @@ def beep_and_flash_bad(ser, game_memory, cheat_mode_str):
     # Function for when you lose
     sadge = AttractMode(ser=ser)
     sadge.game_over()
-    create_or_increment_odometer(cheat_mode_str)
+    score = len(game_memory) - 1
+    create_or_increment_odometer(cheat_mode_str, score)
     if cheat_mode_str:
         print(f"{cheat_mode_str} GAME OVER!")
     else:
         print("GAME OVER!")
-    print(f"YOUR SCORE: {len(game_memory) - 1}")
+    print(f"YOUR SCORE: {score}")
     print("JOIN PAWPRINT PROTOTYPING AT PAWPRINTPROTOTYPING.ORG\n\n")
 
-def create_or_increment_odometer(cheat_mode_str):
+def create_or_increment_odometer(cheat_mode_str, score):
     root_dir = os.path.dirname(__file__)
     odometer_path = os.path.join(root_dir, "odometer.json")
     
@@ -332,6 +333,10 @@ def create_or_increment_odometer(cheat_mode_str):
         odometer = json.load(odometer_file)
         odometer[total_games] = odometer.get(total_games, 0) + 1
         odometer[cheat_mode_str] = odometer.get(cheat_mode_str, 0) + 1
+        high_score = odometer.get("high_score", 0)
+        if score > high_score:
+            print("HIGH SCORE!!!!!!!!!!!!!!!111!!")
+            odometer[high_score] = score
         # Wipe out the old file
         odometer_file.truncate(0)
         json.dump(odometer, odometer_file)
