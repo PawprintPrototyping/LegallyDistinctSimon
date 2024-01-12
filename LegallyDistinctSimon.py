@@ -288,7 +288,8 @@ def beep_and_flash_input(ser, index):
     # very fun quirk, need to call wait_for_press before wait_for_release behaves correctly.
     BUTTONS[index - 1].wait_for_press()
     BUTTONS[index - 1].wait_for_release()
-    print(f"Button {index} pushed")
+    if DEBUG:
+        print(f"Button {index} pushed")
 
     if SPEEDRUN_TIMER:
         for _ in range(round((SPEEDRUN_TIMER * 0.9))): # Borrowing kay's technique for non-blocking wait
