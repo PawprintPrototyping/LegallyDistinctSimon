@@ -26,6 +26,7 @@ CHEAT_MODES = {
     "dog_mode": [4,3,2,1],
     "cat_mode": [1,2,3,4],
     "blue_mode": [3,3,3,3,3,3],
+    "ogre_mode": [4,3,4,3,4,3,4,3],
     "speedrun_mode": [2,3,1,4],
 }
 
@@ -80,6 +81,28 @@ def get_dog_soundboard():
         pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_woof_p50_a200.wav")),
         pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_woof_p75_a200.wav")),
         pygame.mixer.Sound(os.path.join(sounds_directory, "espeak_woof_p100_a200.wav")),
+    ]
+
+    return sounds
+
+
+def get_ogre_soundboard():
+    """Play an audio file as a buffered sound sample, but with more Mike Meyers
+
+    :param str file_path: audio file (default data/secosmic_low.wav)
+    """
+    # choose a desired audio format
+    pygame.mixer.init(8000)  # raises exception on fail
+
+    # load the sounds
+    sounds = []
+    root_dir = os.path.dirname(__file__)
+    sounds_directory = os.path.join(root_dir, "ogre_sounds")
+    sounds = [
+        pygame.mixer.Sound(os.path.join(sounds_directory, "swamp.wav")),
+        pygame.mixer.Sound(os.path.join(sounds_directory, "donkey.wav")),
+        pygame.mixer.Sound(os.path.join(sounds_directory, "layers.wav")),
+        pygame.mixer.Sound(os.path.join(sounds_directory, "onions.wav")),
     ]
 
     return sounds
@@ -340,15 +363,15 @@ def block_until_butt_release(butt):
 def reset_to_normal_mode():
     # If you change something for a special cheat mode, make sure to reset it here!
     global LIGHTS_AND_SOUND
-    global BLUE_PLAYER_PROC
+    global MPLAYER_PROC
     global SPEEDRUN_TIMER
     global SONIC_PROC
     LIGHTS_AND_SOUND = list(zip(COLORS, get_soundboard()))
     # kill any video players
-    if BLUE_PLAYER_PROC:
+    if MPLAYER_PROC:
         # Begone thot
-        BLUE_PLAYER_PROC.kill()
-        BLUE_PLAYER_PROC = None
+        MPLAYER_PROC.kill()
+        MPLAYER_PROC = None
     SPEEDRUN_TIMER = None
     if SONIC_PROC:
         # Be gentler and SIGTERM, since there's a family tree here
@@ -357,11 +380,11 @@ def reset_to_normal_mode():
 
 def main():
     global LIGHTS_AND_SOUND
-    global BLUE_PLAYER_PROC
+    global MPLAYER_PROC
     global SPEEDRUN_TIMER
     global SONIC_PROC
     LIGHTS_AND_SOUND = list(zip(COLORS, get_soundboard()))
-    BLUE_PLAYER_PROC = None
+    MPLAYER_PROC = None
     SPEEDRUN_TIMER = None
     SONIC_PROC = None
     TIMEOUT_VALUE = 10
@@ -441,7 +464,16 @@ def main():
                 full_blue_path = os.path.join(videos_directory, "blue.webm")
                 BLUE_COLORS = ('0 0 255', '0 0 255', '0 0 255', '0 0 255')
                 LIGHTS_AND_SOUND = list(zip(BLUE_COLORS, get_soundboard()))
-                BLUE_PLAYER_PROC = subprocess.Popen(["mplayer", "-geometry", "300x300+300+300", full_blue_path])
+                MPLAYER_PROC = subprocess.Popen(["mplayer", "-geometry", "300x300+300+300", full_blue_path])
+
+            if cheat_mode_str == "ogre_mode":
+                print("CHEAT MODE UNLOCKED: OGRE MODE!! LAYERS!")
+                root_dir = os.path.dirname(__file__)
+                videos_directory = os.path.join(root_dir, "videos")
+                full_ogre_path = os.path.join(videos_directory, "ogre.mp4")
+                OGRE_COLORS = ('0 255 0', '0 255 0', '0 255 0', '0 255 0')
+                LIGHTS_AND_SOUND = list(zip(OGRE_COLORS, get_ogre_soundboard()))
+                MPLAYER_PROC = subprocess.Popen(["mplayer", "-geometry", "300x300+300+300", full_ogre_path])
 
             if cheat_mode_str == "speedrun_mode":
                 print("CHEAT MODE UNLOCKED: SPEED RUN MODE!! GOTTA GO FAST!")
